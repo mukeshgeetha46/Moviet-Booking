@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 interface Movie {
   title: string;
   movie_id: number;
@@ -15,8 +16,15 @@ interface MovieCardProps {
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const navigate = useNavigate();
+    const { setMovieId } = useAuth();
+  
+      const handleMovieClick = () => {
+        setMovieId(movie.movie_id);
+        navigate(`/movies/${movie.title}/${movie.movie_id}`);
+      }
+
   return (
-    <div className="w-[200px] flex-shrink-0" onClick={()=> navigate(`/movies/${movie.title}/${movie.movie_id}`)}>
+    <div className="w-[200px] flex-shrink-0" onClick={handleMovieClick}>
       <div className="relative">
         <img
           src={movie.image_url}

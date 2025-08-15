@@ -3,6 +3,7 @@ import { Button, Badge } from "antd";
 import { EnvironmentOutlined, StarFilled } from "@ant-design/icons";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 interface Theater {
   theater_id: number;
@@ -21,37 +22,108 @@ interface ApiResponse<T> {
   status: string;
   data: T;
 }
+interface Movie {
+  movie_id: number;
+  title: string;
+}
 
+interface DateOption {
+  label: string;
+  fullDate: Date;
+}
 
 // Common showtimes for all theaters
 const commonShowtimes = ["10:00 AM", "1:30 PM", "5:00 PM", "8:30 PM", "11:00 PM"];
 
 const TheaterSelection = () => {
+const { movieId, setMovieDate } = useAuth();
+
   const [selectedDate, setSelectedDate] = useState("Today");
   const [theaters, setTheaters] = useState<Theater[]>([]);
-  const movieTitle = 'Avengers: Infinity';
-  const dates = ["Today", "Tomorrow", "Sun 15", "Mon 16", "Tue 17"];
+  const [movieName, setMovieName] = useState<string>("");
+  const [selectedDatefull, setSelectedfullDate] = useState<DateOption | undefined>();
+
+
+    console.log(selectedDatefull)
+
+  const getDatesUntilMonthEnd = () => {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const datesArray: DateOption[] = [];
+
+    const dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      currentMonth + 1,
+      0
+    ).getDate();
+    const daysRemaining = lastDayOfMonth - today.getDate();
+
+    for (let i = 0; i <= daysRemaining; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+
+      let label = "";
+      if (i === 0) label = "Today";
+      else if (i === 1) label = "Tomorrow";
+      else label = `${dayFormatter.format(date)} ${date.getDate()}`;
+
+      datesArray.push({ label, fullDate: date });
+    }
+
+    return datesArray;
+  };
+
+ 
+
+  const dates = getDatesUntilMonthEnd();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMoviesdetails = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosInstance.get<ApiResponse<Theater[]>>(`/theaters`);
         setTheaters(response.data.data);
       } catch (err) {
-        // Optionally handle error here
-        // console.error(err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchMoviesdetails();
   }, []);
+
+  useEffect(() => {
+    const fetchMoviesName = async () => {
+      if (!movieId) return;
+      
+      try {
+        const response = await axiosInstance.get<ApiResponse<Movie>>(`/movies/name/${movieId}`);
+        if (response.data.data && response.data.data.title) {
+          setMovieName(response.data.data.title);
+        }
+      } catch (err) {
+        console.error(err);
+        setMovieName("Movie Title Not Available");
+      }
+    };
+    fetchMoviesName();
+  }, [movieId]); 
+
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error}</div>;
+  if (!theaters) return <div className="min-h-screen flex items-center justify-center">No movie data found</div>;
   
   return (
     <div className="min-h-screen bg-white py-8 max-w-7xl mx-auto">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{movieTitle}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{movieName}</h1>
           <p className="text-gray-600">Select your preferred cinema & showtime</p>
         </div>
 
@@ -61,12 +133,16 @@ const TheaterSelection = () => {
           <div className="flex space-x-2 overflow-x-auto">
             {dates.map((date) => (
               <Button
-                key={date}
-                type={selectedDate === date ? "primary" : "default"}
-                onClick={() => setSelectedDate(date)}
+                key={date.label}
+                type={selectedDate === date.label ? "primary" : "default"}
+                onClick={() => {
+                  setSelectedDate(date.label);
+                  setSelectedfullDate(date);
+                  setMovieDate(date.fullDate);
+                }}
                 className="whitespace-nowrap"
               >
-                {date}
+                {date.label}
               </Button>
             ))}
           </div>
@@ -87,7 +163,7 @@ const TheaterSelection = () => {
                     </div>
                     <div className="flex items-center">
                       <StarFilled className="mr-1 text-yellow-500" />
-                      <span className="text-sm">4.2</span> {/* Added default rating */}
+                      <span className="text-sm">4.2</span>
                     </div>
                   </div>
                   

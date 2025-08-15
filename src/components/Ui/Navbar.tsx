@@ -1,10 +1,13 @@
-import { SearchOutlined, MenuOutlined } from "@ant-design/icons";
+import { SearchOutlined, MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { getUserData } from "../../utils/auth";
 import { useAuth } from "../context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown, Menu } from 'antd';
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Drawer } from "antd";
+import BookingListLoginPrompt from "./BookingListLoginPrompt";
+
 interface Navbar {
 
   fullname: string;
@@ -14,7 +17,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   console.log('📢📣',user)
-
+ const [open, setOpen] = useState(false);
     
 
   const menu = (
@@ -31,6 +34,14 @@ export default function Navbar() {
     </Menu.Item>
   </Menu>
 );
+
+const handleOpenOrders = () => {
+  navigate('/movies/Booking/list');
+  setOpen(false); // Close the drawer after navigating
+}
+
+
+
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
@@ -73,7 +84,43 @@ export default function Navbar() {
           }
          
           
-          <MenuOutlined className="text-2xl cursor-pointer" />
+          <MenuOutlined className="text-2xl cursor-pointer"  onClick={() => setOpen(true)} />
+            <Drawer
+        placement="right"
+        onClose={() => setOpen(false)}
+        open={open}
+        closeIcon={false} // We'll use our own close button
+        bodyStyle={{ padding: 0 }} // Remove default padding
+        headerStyle={{ display: "none" }} // Remove default header
+      >
+        {/* Header */}
+        <div className="bg-red-600 text-white p-4 flex justify-between items-center">
+          <h2 className="text-lg font-bold">Menu</h2>
+          <button
+            onClick={() => setOpen(false)}
+            className="text-white text-2xl font-bold"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Menu Items */}
+        <nav className="divide-y divide-gray-200">
+          <p
+          onClick={handleOpenOrders}
+            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
+          >
+            <ShoppingCartOutlined className="text-lg text-red-500" />
+            <span className="text-gray-800 font-medium">Your Orders</span>
+          </p>
+          <p
+            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
+          >
+            <UserOutlined className="text-lg text-red-500" />
+            <span className="text-gray-800 font-medium">Profile</span>
+          </p>
+        </nav>
+      </Drawer>
         </div>
       </div>
 

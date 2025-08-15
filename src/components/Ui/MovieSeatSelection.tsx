@@ -9,6 +9,8 @@ import { useAuth } from "../context/AuthContext";
 
 interface Seat {
   seat_id: number;
+  total: number;
+  userid: string;
   theater_id: number;
   row_letter: string;
   seat_number: number;
@@ -25,7 +27,7 @@ interface ApiResponse<T> {
 }
 
 const SeatSelection = () => {
-  const { user } = useAuth();
+  const { user,movieId,movieDate } = useAuth();
   
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -39,26 +41,14 @@ const SeatSelection = () => {
   const theaterName = 'PVR Cinemas - Phoenix MarketCity';
   const showtime = '10:00 AM';
 
-
-    const handlepayment = () => {
-      if(!user){
-         toast('Please login to continue', {
-      icon: 'ℹ️', // Info emoji
-      style: {
-        background: '#3b82f6', // Blue background
-        color: '#fff',
-      },
-    });
-      }else{
-        navigate('/movies/Booking/confirmation')
-      }
-    }
+  console.log(movieId,'🎟🎟🎞')
+   
 
   useEffect(() => {
     const fetchSeats = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<ApiResponse<Seat[]>>(`/theaters/${params.theater_id}`);
+        const response = await axiosInstance.get<ApiResponse<Seat[]>>(`/theaters/${params.theater_id}/${movieId}`);
         setSeats(response.data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -105,6 +95,57 @@ const SeatSelection = () => {
   const total = selectedSeats.reduce((sum, seat) => sum + getSeatPrice(seat), 0);
   const regularCount = selectedSeats.filter(s => s.seat_type === "Standard").length;
   const premiumCount = selectedSeats.filter(s => s.seat_type === "Premium").length;
+
+
+
+  const Bookticket = async () => {
+  try {
+    if (!user) {
+      console.error("User not logged in");
+      toast.error('Please login to continue');
+      return;
+    }
+
+    const bookingData = {
+      customer_id: user.userid,
+      status: 'Booked',
+      price: total,
+      seats: selectedSeats,
+      movie_id: movieId,
+      theater_id: params.theater_id,
+      show_date: movieDate,
+    };
+
+    const response = await axiosInstance.post<ApiResponse<any>>(
+      "/movies/book",
+      bookingData,
+      {
+        headers: {
+          "Content-Type": "application/json" // Changed from multipart/form-data
+        }
+      }
+    );
+    
+    navigate('/movies/Booking/confirmation');
+  } catch (error) {
+    console.error("Booking error:", error);
+    toast.error('Booking failed. Please try again.');
+  }
+};
+
+    const handlepayment = () => {
+      if(!user){
+         toast('Please login to continue', {
+      icon: 'ℹ️', // Info emoji
+      style: {
+        background: '#3b82f6', // Blue background
+        color: '#fff',
+      },
+    });
+      }else{
+        Bookticket();
+      }
+    }
 
   if (isLoading) {
     return (

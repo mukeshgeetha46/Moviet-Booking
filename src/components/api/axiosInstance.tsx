@@ -13,7 +13,7 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // Example: attach token
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,9 +30,15 @@ axiosInstance.interceptors.response.use(
 
     if (error.response) {
       // Server responded with an error
-      message =
-        (error.response.data as any)?.message ||
-        `Error ${error.response.status}: ${error.response.statusText}`;
+      if (error.response.status === 401) {
+        localStorage.removeItem("authToken"); 
+  window.location.href = '/login';
+        message = "Your session has expired. Please log in again.";
+      } else {
+        message =
+          (error.response.data as any)?.message ||
+          `Error ${error.response.status}: ${error.response.statusText}`;
+      }
     } else if (error.request) {
       // Request was made but no response
       message = "No response from server. Please try again.";
@@ -41,9 +47,7 @@ axiosInstance.interceptors.response.use(
       message = error.message;
     }
 
-    // Optional: Show toast or alert
     console.error("API Error:", message);
-
     return Promise.reject(new Error(message));
   }
 );

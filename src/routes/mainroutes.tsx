@@ -1,5 +1,6 @@
 import AuthPage from "../components/Auth/Auth";
 import BookingConfirmation from "../components/Ui/BookingConfirmation";
+import BookingList from "../components/Ui/BookingList";
 import MainMovie from "../components/Ui/MainMovie";
 import MainPage from "../components/Ui/MainPage";
 import MovieDetails from "../components/Ui/Moviedetails";
@@ -18,6 +19,7 @@ const MainRoutes = {
     { path:'movies/seat-layout/:theater_id', element: <SeatSelection /> },
     { path:'movies/buytickets', element: <TheaterSelection /> },
     { path:'movies/Booking/confirmation', element: <BookingConfirmation /> },
+    { path:'movies/Booking/list', element: <BookingList /> },
    
   ],
 };
