@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 interface Movie {
-  poster: string;
   title: string;
+  movie_id: number;
   genre: string;
   likes: string | number;
   promoted?: boolean;
+    image_url: string;
 }
 
 interface MovieCardProps {
@@ -15,10 +16,10 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const navigate = useNavigate();
   return (
-    <div className="w-[200px] flex-shrink-0" onClick={()=> navigate(`/movies/${movie.title}`)}>
+    <div className="w-[200px] flex-shrink-0" onClick={()=> navigate(`/movies/${movie.title}/${movie.movie_id}`)}>
       <div className="relative">
         <img
-          src={movie.poster}
+          src={movie.image_url}
           alt={movie.title}
           className="rounded-lg w-full"
         />

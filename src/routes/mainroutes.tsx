@@ -1,3 +1,4 @@
+import AuthPage from "../components/Auth/Auth";
 import BookingConfirmation from "../components/Ui/BookingConfirmation";
 import MainMovie from "../components/Ui/MainMovie";
 import MainPage from "../components/Ui/MainPage";
@@ -13,13 +14,22 @@ const MainRoutes = {
   element: <MainMovie />,
   children: [
     { index: true, element: <MainPage /> },
-    { path:'movies/:moviename', element: <MovieDetails /> },
-    { path:'movies/seat-layout', element: <SeatSelection /> },
+    { path:'movies/:moviename/:movieid', element: <MovieDetails /> },
+    { path:'movies/seat-layout/:theater_id', element: <SeatSelection /> },
     { path:'movies/buytickets', element: <TheaterSelection /> },
     { path:'movies/Booking/confirmation', element: <BookingConfirmation /> },
+   
+  ],
+};
+
+
+const AuthRoutes = {
+  path: '/',
+  children: [
+     { path:'auth', element: <AuthPage /> },
   ],
 };
 
 
 
-export { MainRoutes };
+export { MainRoutes,AuthRoutes };

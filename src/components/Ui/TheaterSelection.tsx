@@ -1,58 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Badge } from "antd";
 import { EnvironmentOutlined, StarFilled } from "@ant-design/icons";
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from "../api/axiosInstance";
 
 interface Theater {
-  id: string;
+  theater_id: number;
   name: string;
-  location: string;
-  distance: string;
-  rating: number;
-  showtimes: string[];
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
   facilities: string[];
+  created_at: string;
+  updated_at: string;
 }
 
-interface TheaterSelectionProps {
-  movieTitle: string;
-  onShowtimeSelect: (theater: Theater, showtime: string) => void;
+interface ApiResponse<T> {
+  code: number;
+  status: string;
+  data: T;
 }
 
-const theaters: Theater[] = [
-  {
-    id: "1",
-    name: "PVR Cinemas - Phoenix MarketCity",
-    location: "Kurla West, Mumbai",
-    distance: "2.5 km",
-    rating: 4.3,
-    showtimes: ["10:00 AM", "1:30 PM", "5:00 PM", "8:30 PM", "11:00 PM"],
-    facilities: ["Dolby Atmos", "IMAX", "Recliner Seats"],
-  },
-  {
-    id: "2",
-    name: "INOX Leisure Ltd - R City Mall",
-    location: "Ghatkopar West, Mumbai",
-    distance: "3.2 km",
-    rating: 4.1,
-    showtimes: ["11:15 AM", "2:45 PM", "6:15 PM", "9:45 PM"],
-    facilities: ["4DX", "Premium Seating", "Food Court"],
-  },
-  {
-    id: "3",
-    name: "Cinepolis Fun Cinemas",
-    location: "Andheri East, Mumbai",
-    distance: "4.8 km",
-    rating: 4.0,
-    showtimes: ["12:30 PM", "4:00 PM", "7:30 PM", "10:30 PM"],
-    facilities: ["Premium Seating", "Snacks", "Parking"],
-  },
-];
+
+// Common showtimes for all theaters
+const commonShowtimes = ["10:00 AM", "1:30 PM", "5:00 PM", "8:30 PM", "11:00 PM"];
 
 const TheaterSelection = () => {
   const [selectedDate, setSelectedDate] = useState("Today");
+  const [theaters, setTheaters] = useState<Theater[]>([]);
   const movieTitle = 'Avengers: Infinity';
   const dates = ["Today", "Tomorrow", "Sun 15", "Mon 16", "Tue 17"];
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchMoviesdetails = async () => {
+      try {
+        const response = await axiosInstance.get<ApiResponse<Theater[]>>(`/theaters`);
+        setTheaters(response.data.data);
+      } catch (err) {
+        // Optionally handle error here
+        // console.error(err);
+      }
+    };
+    fetchMoviesdetails();
+  }, []);
+  
   return (
     <div className="min-h-screen bg-white py-8 max-w-7xl mx-auto">
       <div className="container mx-auto px-4">
@@ -82,7 +75,7 @@ const TheaterSelection = () => {
         {/* Theater List */}
         <div className="space-y-6">
           {theaters.map((theater) => (
-            <div key={theater.id} className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
+            <div key={theater.theater_id} className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
               {/* Theater Info */}
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
@@ -90,18 +83,17 @@ const TheaterSelection = () => {
                   <div className="flex items-center space-x-4 text-gray-600 mb-3">
                     <div className="flex items-center">
                       <EnvironmentOutlined className="mr-1" />
-                      <span className="text-sm">{theater.location}</span>
+                      <span className="text-sm">{theater.address}, {theater.city}, {theater.state} - {theater.pincode}</span>
                     </div>
-                    <span className="text-sm">{theater.distance}</span>
                     <div className="flex items-center">
                       <StarFilled className="mr-1 text-yellow-500" />
-                      <span className="text-sm">{theater.rating}</span>
+                      <span className="text-sm">4.2</span> {/* Added default rating */}
                     </div>
                   </div>
                   
                   {/* Facilities */}
                   <div className="flex flex-wrap gap-2">
-                    {theater.facilities.map((facility) => (
+                    {theater.facilities?.map((facility: string) => (
                       <Badge key={facility} className="bg-gray-200 text-gray-800 text-xs p-1 rounded">
                         {facility}
                       </Badge>
@@ -114,12 +106,12 @@ const TheaterSelection = () => {
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">Showtimes</h4>
                 <div className="flex flex-wrap gap-3">
-                  {theater.showtimes.map((time) => (
+                  {commonShowtimes.map((time) => (
                     <Button
                       key={time}
                       type="default"
                       className="hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors"
-                      onClick={()=>navigate('/movies/seat-layout')}
+                      onClick={() => navigate(`/movies/seat-layout/${theater.theater_id}`)}
                     >
                       {time}
                     </Button>

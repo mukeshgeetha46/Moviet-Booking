@@ -1,13 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
+
 import './App.css';
-import MainMovie from './components/Ui/MainMovie';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/routes';
-
+import { AuthProvider } from './components/context/AuthContext';
+import { Toaster } from 'react-hot-toast';
 function App() {
+  
   return (
-        <RouterProvider router={router} />
+     <AuthProvider>
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+      <RouterProvider router={router} />
+     </AuthProvider>
+        
 
   );
 }

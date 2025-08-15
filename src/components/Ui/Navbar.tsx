@@ -1,7 +1,36 @@
 import { SearchOutlined, MenuOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { getUserData } from "../../utils/auth";
+import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
+import { Dropdown, Menu } from 'antd';
+import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
+interface Navbar {
+
+  fullname: string;
+}
+
 export default function Navbar() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  console.log('📢📣',user)
+
+    
+
+  const menu = (
+  <Menu>
+    <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => navigate('/profile')}>
+      Profile
+    </Menu.Item>
+    <Menu.Item key="settings" icon={<SettingOutlined />} onClick={() => navigate('/settings')}>
+      Settings
+    </Menu.Item>
+    <Menu.Divider />
+    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
+      Logout
+    </Menu.Item>
+  </Menu>
+);
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
@@ -30,7 +59,20 @@ export default function Navbar() {
         {/* Right Side */}
         <div className="flex items-center gap-4">
           <span className="hidden md:inline text-gray-700 text-sm">Chennai</span>
-          <button className="bg-[#f84464] text-white px-4 py-1 rounded text-sm">Sign In</button>
+          {
+            user ? (<Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+  <div className="flex items-center gap-2 cursor-pointer">
+    <img 
+      className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-300 cursor-pointer transition" 
+      src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXUFxQ6HZVcK1r5dnZ1Qd4KTujPUBUzu1ZDQ&s`} 
+      alt="User avatar"
+    />
+    <p className="flex items-center">{user?.fullname || user?.fullname}</p>
+  </div>
+</Dropdown>) : (<button className="bg-[#f84464] text-white px-4 py-1 rounded text-sm" onClick={()=>navigate('/auth')}>Sign In</button>)
+          }
+         
+          
           <MenuOutlined className="text-2xl cursor-pointer" />
         </div>
       </div>
