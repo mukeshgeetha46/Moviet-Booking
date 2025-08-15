@@ -1,4 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
+import { clearAuthData } from "../context/AuthContext";
+import toast from 'react-hot-toast';
 
 // Create an axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -23,6 +25,26 @@ axiosInstance.interceptors.request.use(
 );
 
 // Response interceptor
+axiosInstance.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  (error: AxiosError) => {
+    // Check if response exists
+    if (error.response) {
+      const errorMsg = (error.response.data as any)?.error || "An error occurred";
+      if (errorMsg.errors.code === 401) {
+        toast.error("Session expired. Please log in again.");
+       clearAuthData();
+        window.location.href = '/auth';
+      }
+    } else {
+      // Handle network or unknown errors
+      console.error("Network or unknown error", error.message);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 
 
 export default axiosInstance;
