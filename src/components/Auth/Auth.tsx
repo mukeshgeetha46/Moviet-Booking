@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
-import { setAuthData, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 interface ApiResponse<T> {
@@ -55,8 +55,7 @@ login(response.data.data.token, response.data.data.user);
       setName('');
     }
      toast.success(isLogin ?'Logged in successfully' : 'Registered successfully');
-    console.log(response.data);
-    // Handle successful login/registration
+  
   } catch (error: any) {
    if (
   error.response?.data?.error &&
@@ -73,8 +72,6 @@ else if(error.response?.data?.error &&
   toast.error(error.response.data.error.error || 'invalid credentials');
 }
 
-      
-    console.log('Authentication failed:', error.response?.data);
 }
 finally{
     setIsSubmitting(false)

@@ -121,13 +121,11 @@ const { movieId, setMovieDate } = useAuth();
   return (
     <div className="min-h-screen bg-white py-8 max-w-7xl mx-auto">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{movieName}</h1>
           <p className="text-gray-600">Select your preferred cinema & showtime</p>
         </div>
 
-        {/* Date Selection */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Select Date</h2>
           <div className="flex space-x-2 overflow-x-auto">
@@ -148,11 +146,11 @@ const { movieId, setMovieDate } = useAuth();
           </div>
         </div>
 
-        {/* Theater List */}
+
         <div className="space-y-6">
           {theaters.map((theater) => (
             <div key={theater.theater_id} className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
-              {/* Theater Info */}
+      
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{theater.name}</h3>
@@ -167,7 +165,7 @@ const { movieId, setMovieDate } = useAuth();
                     </div>
                   </div>
                   
-                  {/* Facilities */}
+           
                   <div className="flex flex-wrap gap-2">
                     {theater.facilities?.map((facility: string) => (
                       <Badge key={facility} className="bg-gray-200 text-gray-800 text-xs p-1 rounded">
@@ -178,7 +176,7 @@ const { movieId, setMovieDate } = useAuth();
                 </div>
               </div>
 
-              {/* Showtimes */}
+         
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">Showtimes</h4>
                 <div className="flex flex-wrap gap-3">

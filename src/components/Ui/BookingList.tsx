@@ -29,18 +29,7 @@ interface ApiResponse<T> {
   data: T;
 }
 
-const getStatusColor = (status: BookingStatus) => {
-  switch (status) {
-    case "REFUNDED":
-      return "bg-green-500";
-    case "PAYMENT_PENDING":
-      return "bg-gradient-to-r from-purple-400 to-blue-400";
-    case "PAYMENT_FAILED":
-      return "bg-gradient-to-r from-purple-400 to-blue-400";
-    default:
-      return "bg-[#03fc17]";
-  }
-};
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('en-US', {
@@ -52,7 +41,6 @@ const formatDate = (dateString: string) => {
   .replace(/(\w+), (\d+), (\w+), (\d+)/, '$1, $2 $3, $4');
 };
 
-// utils/dateFormatter.ts
 export const formatDateTime = (dateString: string): string => {
   const date = new Date(dateString);
   
@@ -135,13 +123,11 @@ export default function BookingList() {
             Ordered on: {formatDateTime(booking.created_at)}
           </p>
           <div className="flex gap-4 mt-2">
-            {/* Movie Poster */}
             <img
               src={booking.image_url}
               alt={booking.title}
               className="w-16 h-20 object-cover rounded"
             />
-            {/* Details */}
             <div className="flex-1">
               <h2 className="font-semibold text-lg">{booking.title}</h2>
               <p className="text-gray-500">{booking.languages}</p>
@@ -152,7 +138,7 @@ export default function BookingList() {
               <p className="text-sm text-gray-600">{`${booking.ticket_count} tickets`}</p>
               <p className="text-sm font-medium">{`Seats :${booking.booked_seats}`}</p>
 
-              {/* Status */}
+       
              <div className="flex items-center space-x-2 mt-2">
                <div
                 className={`text-white text-xs px-2 py-1 mt-2 rounded w-fit bg-green-500`}

@@ -33,14 +33,13 @@ interface Theater {
   name: string;
   movie: string;
   location: string;
-  // other theater properties...
 }
 
 const SeatSelection = () => {
   const { user,movieId,movieDate } = useAuth();
   
   const [seats, setSeats] = useState<Seat[]>([]);
-  const [TheaterName, setTheaterName] = useState<string>(""); // Changed from Seat[] to string
+  const [TheaterName, setTheaterName] = useState<string>(""); 
   const [MovieName, setMovieName] = useState<string>(""); 
 
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
@@ -54,11 +53,10 @@ const SeatSelection = () => {
   
   const navigate = useNavigate();
   const params = useParams<{ theater_id: string }>();
-  const movieTitle = 'Avengers: Infinity';
-  const theaterName = 'PVR Cinemas - Phoenix MarketCity';
+
   const showtime = '10:00 AM';
 
-  console.log(movieId,'🎟🎟🎞')
+
    
 
   useEffect(() => {
@@ -133,7 +131,7 @@ const SeatSelection = () => {
 
 const Bookticket = async () => {
   setIsLoadingsubmit(true);
-  let response; // Declare here so it's in scope for finally
+  let response;
 
   try {
     if (!user) {
@@ -202,14 +200,12 @@ const Bookticket = async () => {
   return (
     <div className="min-h-screen bg-white py-4 px-2 sm:py-8 sm:max-w-7xl sm:mx-auto">
       <div className="container mx-auto sm:px-4">
-        {/* Header */}
+
        <div className="flex items-center gap-4">
-  {/* Back Arrow */}
   <div onClick={() => navigate(-1)}>
     <ArrowLeftOutlined />
   </div>
 
-  {/* Movie Info */}
   <div className="mb-4 sm:mb-8">
     <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
       {MovieName}
@@ -221,15 +217,13 @@ const Bookticket = async () => {
 </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
-          {/* Seat Map - Visible on desktop */}
           <div className="lg:col-span-3 hidden lg:block">
-            {/* Screen */}
             <div className="text-center mb-6 sm:mb-8">
               <div className="bg-gradient-to-r from-transparent via-blue-500 to-transparent h-1 rounded-full mx-auto mb-2"></div>
               <p className="text-gray-500 text-sm">SCREEN THIS WAY</p>
             </div>
 
-            {/* Legend */}
+       
             <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-4 sm:mb-6">
               {[
                 { color: "bg-gray-200", label: "Available" },
@@ -244,7 +238,7 @@ const Bookticket = async () => {
               ))}
             </div>
 
-            {/* Seats Grid */}
+        
             <div className="bg-gray-50 rounded-lg p-4 sm:p-6 overflow-x-auto flex justify-center items-center">
               <div className="min-w-max m-auto">
                 {Array.from(new Set(seats.map(s => s.row_letter))).map(row => (
@@ -273,7 +267,7 @@ const Bookticket = async () => {
             <TrapezoidCard />
           </div>
 
-          {/* Mobile Seat Selection Button - Visible only on mobile */}
+         
           <div className="lg:hidden mb-4">
             <Button
               onClick={() => setShowMobileSeatModal(true)}
@@ -286,7 +280,7 @@ const Bookticket = async () => {
             </Button>
           </div>
 
-          {/* Booking Summary */}
+
           <div className="lg:col-span-1">
             <div className="bg-gray-50 rounded-lg p-4 sm:p-6 shadow-md lg:sticky lg:top-8">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Booking Summary</h3>
@@ -355,7 +349,7 @@ const Bookticket = async () => {
         </div>
       </div>
  <FullPageLoader open={isLoadingsubmit} message="Loading..." backdropOpacity={50} />
-      {/* Mobile Seat Selection Modal */}
+     
       {showMobileSeatModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center lg:hidden">
           <div className="bg-white p-4 rounded-lg w-full max-w-md max-h-[80vh] overflow-y-auto m-4">

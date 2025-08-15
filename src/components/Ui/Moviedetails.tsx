@@ -40,7 +40,6 @@ const MovieDetails = () => {
 
   const handleInterested = () => {
     setIsInterested(!isInterested);
-    // You might want to make an API call here to update interest count
   };
 
   const formatDate = (dateString: string) => {
@@ -76,7 +75,6 @@ const MovieDetails = () => {
 
   return (
     <div className="min-h-screen bg-white text-white">
-      {/* Hero Section */}
       <div className="relative">
         <div 
           className="absolute inset-0 bg-cover bg-right bg-no-repeat"
@@ -87,7 +85,7 @@ const MovieDetails = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         
-        {/* Header */}
+  
         <div className="relative z-10 flex justify-end p-6">
           <button className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-white/20 transition-colors">
             <ShareAltOutlined style={{ fontSize: '18px' }} />
@@ -95,9 +93,9 @@ const MovieDetails = () => {
           </button>
         </div>
 
-        {/* Main Content */}
+     
         <div className="relative z-10 flex flex-col lg:flex-row gap-8 px-6 pb-16 max-w-7xl mx-auto">
-          {/* Movie Poster */}
+      
           <div className="flex-shrink-0">
             <div className="relative w-72 h-96 rounded-lg overflow-hidden shadow-2xl">
               <img 
@@ -120,12 +118,12 @@ const MovieDetails = () => {
             </div>
           </div>
 
-          {/* Movie Details */}
+  
           <div className="flex-grow space-y-6">
             <h1 className="text-5xl font-bold">{movieDetails.title}</h1>
          
 
-            {/* Interest Section */}
+
             <div className="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 w-fit">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
@@ -145,13 +143,13 @@ const MovieDetails = () => {
               </button>
             </div>
 
-            {/* Movie Format & Languages */}
+
             <div className="flex flex-wrap gap-3">
               <span className="bg-gray-700 px-3 py-1 rounded-md text-sm font-medium">2D</span>
               <span className="bg-gray-700 px-3 py-1 rounded-md text-sm">{movieDetails.languages}</span>
             </div>
 
-            {/* Movie Info */}
+
             <div className="flex flex-wrap items-center gap-4 text-gray-300">
               <span>{formatDuration(movieDetails.duration_minutes)}</span>
               <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
@@ -162,7 +160,6 @@ const MovieDetails = () => {
               <span>{formatDate(movieDetails.release_date)}</span>
             </div>
 
-            {/* Book Tickets Button */}
             <button 
               onClick={() => navigate(`/movies/buytickets`)}
               className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -173,7 +170,7 @@ const MovieDetails = () => {
         </div>
       </div>
 
-      {/* About Section */}
+
       <div className='max-w-7xl mx-auto'>
         <div className="bg-white text-black py-16 px-6">
           <div className="max-w-7xl mx-auto">
@@ -194,7 +191,7 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        {/* Cast Section */}
+
         {movieDetails.cast_members && movieDetails.cast_members.length > 0 && (
           <div className="bg-gray-50 text-black py-16 px-6">
             <div className="max-w-7xl mx-auto">

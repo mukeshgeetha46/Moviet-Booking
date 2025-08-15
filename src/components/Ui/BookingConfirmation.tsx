@@ -117,21 +117,19 @@ const BookingConfirmation = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        {/* Success Icon */}
+
         <div className="text-center mb-8">
           <CheckCircleFilled className="text-green-500 text-5xl mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Booking Confirmed!</h1>
           <p className="text-gray-600">Your tickets have been booked successfully</p>
         </div>
 
-        {/* Booking Details Card */}
+  
         <div className="bg-white rounded-lg p-6 shadow-md mb-6 border border-gray-200">
-          {/* Booking ID */}
           <div className="text-center mb-6">
             {`Booking ID: ${bookingDetails.booking_id}`}
           </div>
 
-          {/* Movie Details */}
           <div className="space-y-4 mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{bookingDetails.title}</h2>
@@ -167,7 +165,6 @@ const BookingConfirmation = () => {
 
           <Divider className="my-6" />
 
-          {/* Seat Details */}
           <div className="mb-6">
             <h3 className="font-semibold mb-3">Seat Details</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -194,7 +191,7 @@ const BookingConfirmation = () => {
             </div>
           </div>
 
-          {/* Payment Summary */}
+  
           <div className="bg-gray-100 rounded-lg p-4">
             <h3 className="font-semibold mb-3">Payment Summary</h3>
             <div className="space-y-2">
@@ -227,7 +224,7 @@ const BookingConfirmation = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
+       
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Button 
             icon={<DownloadOutlined />}
@@ -253,7 +250,7 @@ const BookingConfirmation = () => {
           </Button>
         </div>
 
-        {/* Important Notes */}
+        
         <div className="bg-gray-100 rounded-lg p-4">
           <h3 className="font-semibold mb-2">Important Notes</h3>
           <ul className="text-sm text-gray-600 space-y-1">

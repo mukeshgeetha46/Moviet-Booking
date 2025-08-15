@@ -1,12 +1,10 @@
 import { SearchOutlined, MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { getUserData } from "../../utils/auth";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { Dropdown, Menu } from 'antd';
 import { UserOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Drawer } from "antd";
-import BookingListLoginPrompt from "./BookingListLoginPrompt";
 
 interface Navbar {
 
@@ -16,7 +14,7 @@ interface Navbar {
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  console.log('📢📣',user)
+
  const [open, setOpen] = useState(false);
     
 
@@ -37,7 +35,7 @@ export default function Navbar() {
 
 const handleOpenOrders = () => {
   navigate('/movies/Booking/list');
-  setOpen(false); // Close the drawer after navigating
+  setOpen(false); 
 }
 
 
@@ -47,7 +45,6 @@ const handleOpenOrders = () => {
 
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         
-        {/* Logo */}
         <div className="flex items-center gap-2" onClick={()=>navigate('/')}>
           <img
             src="https://in.bmscdn.com/webin/common/icons/logo.svg"
@@ -56,7 +53,7 @@ const handleOpenOrders = () => {
           />
         </div>
 
-        {/* Search Bar */}
+
         <div className="hidden md:flex flex-1 mx-4">
           <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full">
             <SearchOutlined className="text-gray-500 mr-2" />
@@ -68,7 +65,7 @@ const handleOpenOrders = () => {
           </div>
         </div>
 
-        {/* Right Side */}
+
         <div className="flex items-center gap-4">
           <span className="hidden md:inline text-gray-700 text-sm">Chennai</span>
           {
@@ -125,7 +122,7 @@ const handleOpenOrders = () => {
         </div>
       </div>
 
-      {/* Bottom Menu */}
+  
       <div className="bg-white border-t border-gray-200 text-sm px-4 py-2 flex gap-4 text-gray-600">
         <span onClick={()=>navigate('/')}>Movies</span>
         <span>Stream</span>
