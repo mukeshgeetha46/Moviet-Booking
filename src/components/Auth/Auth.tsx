@@ -16,6 +16,7 @@ const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [Cpassword, setCpassword] = useState('');
 const { login,user } = useAuth();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,7 +37,7 @@ const { login,user } = useAuth();
   setIsSubmitting(true);
   try {
     const url = isLogin ? '/login/' : '/register/';
-    const response = await axiosInstance.post<ApiResponse<any>>(url, {fullname:name, email, passwordhash:password });
+    const response = await axiosInstance.post<ApiResponse<any>>(url, {fullname:name, email, passwordhash:password, confirm_password: Cpassword });
     if(response.data.data.token && response.data.data.user){
 login(response.data.data.token, response.data.data.user);
  navigate('/')
@@ -53,14 +54,29 @@ login(response.data.data.token, response.data.data.user);
       setPassword('');
       setName('');
     }
-     toast.success(response.data.data.message);
+     toast.success(isLogin ?'Logged in successfully' : 'Registered successfully');
     console.log(response.data);
     // Handle successful login/registration
-  } catch (error) {
-    console.error('Authentication failed:', error);
-     console.error('Authentication failed:', error);
-  toast.error('Invalid credentials');
-  }finally{
+  } catch (error: any) {
+   if (
+  error.response?.data?.error &&
+  Array.isArray(error.response.data.error.passwordhash) &&
+  error.response.data.error.passwordhash.length > 0
+) {
+  toast.error(error.response.data.error.passwordhash[0]);
+}
+else if(error.response?.data?.error &&
+  Array.isArray(error.response.data.error.confirm_password) &&
+  error.response.data.error.confirm_password.length > 0){
+  toast.error(error.response.data.error.confirm_password[0]);
+}else{
+  toast.error(error.response.data.error.error || 'invalid credentials');
+}
+
+      
+    console.log('Authentication failed:', error.response?.data);
+}
+finally{
     setIsSubmitting(false)
   }
 };
@@ -132,6 +148,8 @@ login(response.data.data.token, response.data.data.user);
                 <input
                   type="password"
                   id="confirmPassword"
+                  value={Cpassword}
+                  onChange={(e) => setCpassword(e.target.value)}
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />

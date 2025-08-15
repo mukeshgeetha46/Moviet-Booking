@@ -6,6 +6,8 @@ import axiosInstance from "../api/axiosInstance";
 import TrapezoidCard from "./TrapezoidCard";
 import toast from 'react-hot-toast';
 import { useAuth } from "../context/AuthContext";
+import FullPageLoader from "../../utils/FullPageLoader";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 interface Seat {
   seat_id: number;
@@ -26,14 +28,29 @@ interface ApiResponse<T> {
   data: T;
 }
 
+interface Theater {
+  theater_id: number;
+  name: string;
+  movie: string;
+  location: string;
+  // other theater properties...
+}
+
 const SeatSelection = () => {
   const { user,movieId,movieDate } = useAuth();
   
   const [seats, setSeats] = useState<Seat[]>([]);
+  const [TheaterName, setTheaterName] = useState<string>(""); // Changed from Seat[] to string
+  const [MovieName, setMovieName] = useState<string>(""); 
+
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showMobileSeatModal, setShowMobileSeatModal] = useState(false);
+
+  const [isLoadingsubmit, setIsLoadingsubmit] = useState(false);
+
   
   const navigate = useNavigate();
   const params = useParams<{ theater_id: string }>();
@@ -48,7 +65,7 @@ const SeatSelection = () => {
     const fetchSeats = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<ApiResponse<Seat[]>>(`/theaters/${params.theater_id}/${movieId}`);
+        const response = await axiosInstance.get<ApiResponse<Seat[]>>(`/slots/${params.theater_id}/${movieId}`);
         setSeats(response.data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -58,6 +75,22 @@ const SeatSelection = () => {
     };
     fetchSeats();
   }, [params.theater_id]);
+
+  useEffect(() => {
+    const fetchTheaterName = async () => {
+  if (!params.theater_id) return;
+  
+  try {
+    const response = await axiosInstance.get<ApiResponse<Theater>>(`/movies/theater/${params.theater_id}/${movieId}`);
+    setTheaterName(response.data.data.name);
+    setMovieName(response.data.data.movie);
+  } catch (err) {
+    console.error(err);
+    setError("Failed to fetch theater details");
+  }
+};
+    fetchTheaterName();
+  }, [params.theater_id]); 
 
   const handleSeatClick = (seat: Seat) => {
     if (!seat.is_active) return;
@@ -98,7 +131,10 @@ const SeatSelection = () => {
 
 
 
-  const Bookticket = async () => {
+const Bookticket = async () => {
+  setIsLoadingsubmit(true);
+  let response; // Declare here so it's in scope for finally
+
   try {
     if (!user) {
       console.error("User not logged in");
@@ -116,32 +152,32 @@ const SeatSelection = () => {
       show_date: movieDate,
     };
 
-    const response = await axiosInstance.post<ApiResponse<any>>(
+    response = await axiosInstance.post<ApiResponse<any>>(
       "/movies/book",
       bookingData,
       {
         headers: {
-          "Content-Type": "application/json" // Changed from multipart/form-data
+          "Content-Type": "application/json"
         }
       }
     );
-    
-    navigate('/movies/Booking/confirmation');
+
   } catch (error) {
     console.error("Booking error:", error);
     toast.error('Booking failed. Please try again.');
+  } finally {
+    if (response?.data?.data?.booking_id) {
+      navigate(`/movies/Booking/confirmation/${response.data.data.booking_id}`);
+    }
+    setIsLoadingsubmit(false);
   }
 };
 
+
     const handlepayment = () => {
       if(!user){
-         toast('Please login to continue', {
-      icon: 'ℹ️', // Info emoji
-      style: {
-        background: '#3b82f6', // Blue background
-        color: '#fff',
-      },
-    });
+         navigate('/auth');
+         toast.error('Please login to continue');
       }else{
         Bookticket();
       }
@@ -167,10 +203,22 @@ const SeatSelection = () => {
     <div className="min-h-screen bg-white py-4 px-2 sm:py-8 sm:max-w-7xl sm:mx-auto">
       <div className="container mx-auto sm:px-4">
         {/* Header */}
-        <div className="mb-4 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">{movieTitle}</h1>
-          <p className="text-sm sm:text-base text-gray-600">{theaterName} • {showtime}</p>
-        </div>
+       <div className="flex items-center gap-4">
+  {/* Back Arrow */}
+  <div onClick={() => navigate(-1)}>
+    <ArrowLeftOutlined />
+  </div>
+
+  {/* Movie Info */}
+  <div className="mb-4 sm:mb-8">
+    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
+      {MovieName}
+    </h1>
+    <p className="text-sm sm:text-base text-gray-600">
+      {TheaterName} • {showtime}
+    </p>
+  </div>
+</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-8">
           {/* Seat Map - Visible on desktop */}
@@ -306,7 +354,7 @@ const SeatSelection = () => {
           </div>
         </div>
       </div>
-
+ <FullPageLoader open={isLoadingsubmit} message="Loading..." backdropOpacity={50} />
       {/* Mobile Seat Selection Modal */}
       {showMobileSeatModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center lg:hidden">

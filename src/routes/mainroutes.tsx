@@ -18,7 +18,7 @@ const MainRoutes = {
     { path:'movies/:moviename/:movieid', element: <MovieDetails /> },
     { path:'movies/seat-layout/:theater_id', element: <SeatSelection /> },
     { path:'movies/buytickets', element: <TheaterSelection /> },
-    { path:'movies/Booking/confirmation', element: <BookingConfirmation /> },
+    { path:'movies/Booking/confirmation/:booking_id', element: <BookingConfirmation /> },
     { path:'movies/Booking/list', element: <BookingList /> },
    
   ],

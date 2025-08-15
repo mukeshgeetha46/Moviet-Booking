@@ -1,4 +1,4 @@
-import { Button, Badge, Divider } from "antd";
+import { Button, Badge, Divider, Alert } from "antd";
 import {
   CheckCircleFilled,
   DownloadOutlined,
@@ -8,45 +8,111 @@ import {
   ClockCircleOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import FullPageLoader from "../../utils/FullPageLoader";
+import { useEffect, useState } from "react";
+import axiosInstance from "../api/axiosInstance";
+import { useParams } from "react-router-dom";
+
 interface Seat {
   id: string;
   row: string;
   number: number;
-  type: "regular" | "premium" | "occupied";
+  type: "Standard" | "Premium" | "occupied";
   price: number;
 }
 
-interface BookingConfirmationProps {
-  movieTitle: string;
-  theaterName: string;
-  showtime: string;
-  selectedSeats: Seat[];
-  total: number;
-  bookingId: string;
-  onBackToHome: () => void;
+interface ApiResponse<T> {
+  code: number;
+  status: string;
+  data: T;
 }
+
+interface BookingDetails {
+  id: string;
+  booking_id: string;
+  title: string;
+  theater_name: string;
+  movie_date: string;
+  show_time: string;
+  ticket_count: string;
+  booked_seats: string | Seat[];
+  screen?: string;
+}
+
+const CONVENIENCE_FEE = 30;
+
+const getParsedSeats = (seats: string | Seat[]): Seat[] => {
+  if (typeof seats === 'string') {
+    try {
+      return JSON.parse(seats) as Seat[];
+    } catch (e) {
+      return [];
+    }
+  }
+  return seats;
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  }).format(date)
+  .replace(/(\w+), (\d+), (\w+), (\d+)/, '$1, $2 $3, $4');
+};
 
 const BookingConfirmation = () => {
-    const navigate = useNavigate();
-  const currentDate = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const navigate = useNavigate();
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
+  const params = useParams<{ booking_id: string }>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const movieTitle = 'Avengers: Infinity';
-  const theaterName = 'PVR Cinemas - Phoenix MarketCity';
-    const showtime = '10:00 AM';
-    const selectedSeats: Seat[] = [
-        { id: 'A1', row: 'A', number: 1, type: 'regular', price: 200 },
-        { id: 'A2', row: 'A', number: 2, type: 'premium', price: 350 }];
-    const total = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
-    const bookingId = 'ABC123456';
+  const onBackToHome = () => {
+    navigate('/');
+  };
 
-const onBackToHome =()=> {
-navigate('/');
-}
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get<ApiResponse<BookingDetails>>(
+          `movies/moviedetails/${params.booking_id}`
+        );
+        setBookingDetails(response.data.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBookingDetails();
+  }, [params.booking_id]);
+
+  if (isLoading) {
+    return <FullPageLoader open={isLoading} message="Loading..." backdropOpacity={50} />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Alert message="Error" description={error} type="error" showIcon />
+      </div>
+    );
+  }
+
+  if (!bookingDetails) {
+    return <div className="min-h-screen flex items-center justify-center">No booking details found</div>;
+  }
+
+  const seats = getParsedSeats(bookingDetails.booked_seats);
+  const regularSeats = seats.filter(s => s.type === "Standard");
+  const premiumSeats = seats.filter(s => s.type === "Premium");
+  const subtotal = seats.reduce((sum, seat) => sum + seat.price, 0);
+  const total = subtotal + CONVENIENCE_FEE;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -62,19 +128,14 @@ navigate('/');
         <div className="bg-white rounded-lg p-6 shadow-md mb-6 border border-gray-200">
           {/* Booking ID */}
           <div className="text-center mb-6">
-            <Badge count={`Booking ID: ${bookingId}`} style={{ 
-              backgroundColor: '#f0f0f0',
-              color: '#666',
-              padding: '8px 16px',
-              fontSize: '14px'
-            }} />
+            {`Booking ID: ${bookingDetails.booking_id}`}
           </div>
 
           {/* Movie Details */}
           <div className="space-y-4 mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{movieTitle}</h2>
-              <p className="text-gray-600">{theaterName}</p>
+              <h2 className="text-2xl font-bold text-gray-900">{bookingDetails.title}</h2>
+              <p className="text-gray-600">{bookingDetails.theater_name}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -82,7 +143,7 @@ navigate('/');
                 <CalendarOutlined className="text-gray-500" />
                 <div>
                   <p className="text-sm text-gray-500">Date</p>
-                  <p className="font-semibold">{currentDate}</p>
+                  <p className="font-semibold">{formatDate(bookingDetails.movie_date)}</p>
                 </div>
               </div>
               
@@ -90,7 +151,7 @@ navigate('/');
                 <ClockCircleOutlined className="text-gray-500" />
                 <div>
                   <p className="text-sm text-gray-500">Time</p>
-                  <p className="font-semibold">{showtime}</p>
+                  <p className="font-semibold">{bookingDetails.show_time}</p>
                 </div>
               </div>
               
@@ -98,7 +159,7 @@ navigate('/');
                 <EnvironmentOutlined className="text-gray-500" />
                 <div>
                   <p className="text-sm text-gray-500">Screen</p>
-                  <p className="font-semibold">Screen 1</p>
+                  <p className="font-semibold">{bookingDetails.screen || 'Screen 1'}</p>
                 </div>
               </div>
             </div>
@@ -113,13 +174,13 @@ navigate('/');
               <div>
                 <p className="text-sm text-gray-500 mb-2">Selected Seats</p>
                 <div className="flex flex-wrap gap-1">
-                  {selectedSeats.map(seat => (
+                  {seats.map((seat) => (
                     <Badge 
                       key={seat.id}
                       count={seat.id}
                       style={{ 
-                        backgroundColor: seat.type === "premium" ? '#faad14' : '#f0f0f0',
-                        color: seat.type === "premium" ? '#fff' : '#666'
+                        backgroundColor: seat.type === "Premium" ? '#faad14' : '#f0f0f0',
+                        color: seat.type === "Premium" ? '#fff' : '#666'
                       }}
                     />
                   ))}
@@ -128,7 +189,7 @@ navigate('/');
               
               <div>
                 <p className="text-sm text-gray-500 mb-2">Total Seats</p>
-                <p className="font-semibold">{selectedSeats.length}</p>
+                <p className="font-semibold">{bookingDetails.ticket_count}</p>
               </div>
             </div>
           </div>
@@ -137,30 +198,30 @@ navigate('/');
           <div className="bg-gray-100 rounded-lg p-4">
             <h3 className="font-semibold mb-3">Payment Summary</h3>
             <div className="space-y-2">
-              {selectedSeats.filter(s => s.type === "regular").length > 0 && (
+              {regularSeats.length > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Regular ({selectedSeats.filter(s => s.type === "regular").length})
+                    Regular ({regularSeats.length})
                   </span>
-                  <span>₹{selectedSeats.filter(s => s.type === "regular").length * 200}</span>
+                  <span>₹{regularSeats.reduce((sum, seat) => sum + seat.price, 0)}</span>
                 </div>
               )}
-              {selectedSeats.filter(s => s.type === "premium").length > 0 && (
+              {premiumSeats.length > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">
-                    Premium ({selectedSeats.filter(s => s.type === "premium").length})
+                    Premium ({premiumSeats.length})
                   </span>
-                  <span>₹{selectedSeats.filter(s => s.type === "premium").length * 350}</span>
+                  <span>₹{premiumSeats.reduce((sum, seat) => sum + seat.price, 0)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Convenience Fee</span>
-                <span>₹30</span>
+                <span>₹{CONVENIENCE_FEE}</span>
               </div>
               <Divider className="my-2" />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total Paid</span>
-                <span className="text-blue-600">₹{total + 30}</span>
+                <span className="text-blue-600">₹{total}</span>
               </div>
             </div>
           </div>
@@ -175,11 +236,12 @@ navigate('/');
             Download Ticket
           </Button>
           
-          <Button 
+          <Button
+          onClick={()=>navigate('/movies/Booking/list')}
             icon={<ShareAltOutlined />}
             className="flex items-center justify-center"
           >
-            Booking List
+             Booking List
           </Button>
           
           <Button 

@@ -29,7 +29,7 @@ export default function Navbar() {
       Settings
     </Menu.Item>
     <Menu.Divider />
-    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
+    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={()=>{logout(); navigate('/')}}>
       Logout
     </Menu.Item>
   </Menu>
@@ -43,7 +43,8 @@ const handleOpenOrders = () => {
 
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white shadow-sm border-b border-gray-200 fixed top-0 w-full z-50">
+
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         
         {/* Logo */}
@@ -126,7 +127,7 @@ const handleOpenOrders = () => {
 
       {/* Bottom Menu */}
       <div className="bg-white border-t border-gray-200 text-sm px-4 py-2 flex gap-4 text-gray-600">
-        <span>Movies</span>
+        <span onClick={()=>navigate('/')}>Movies</span>
         <span>Stream</span>
         <span>Events</span>
         <span>Plays</span>

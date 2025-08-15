@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BookingListLoginPrompt from "./BookingListLoginPrompt";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
-
+import { useNavigate } from "react-router-dom";
 type BookingStatus = "REFUNDED" | "PAYMENT_PENDING" | "PAYMENT_FAILED";
 
 interface Booking {
@@ -38,7 +38,7 @@ const getStatusColor = (status: BookingStatus) => {
     case "PAYMENT_FAILED":
       return "bg-gradient-to-r from-purple-400 to-blue-400";
     default:
-      return "bg-gray-400";
+      return "bg-[#03fc17]";
   }
 };
 const formatDate = (dateString: string) => {
@@ -83,6 +83,7 @@ export const formatDateTime = (dateString: string): string => {
 };
 
 export default function BookingList() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +92,7 @@ export default function BookingList() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axiosInstance.get<ApiResponse<Booking[]>>(`/movies/booking/list`);
+        const response = await axiosInstance.get<ApiResponse<Booking[]>>(`/bookings`);
         console.log('fetched bookings:', response.data.data);
         setBookings(response.data.data);
         setIsLoading(false);
@@ -152,13 +153,19 @@ export default function BookingList() {
               <p className="text-sm font-medium">{`Seats :${booking.booked_seats}`}</p>
 
               {/* Status */}
-              <div
-                className={`${getStatusColor(
-                  booking.status
-                )} text-white text-xs px-2 py-1 mt-2 rounded w-fit`}
+             <div className="flex items-center space-x-2 mt-2">
+               <div
+                className={`text-white text-xs px-2 py-1 mt-2 rounded w-fit bg-green-500`}
               >
                 {booking.status}
               </div>
+              <div
+              onClick={()=>navigate(`/movies/Booking/confirmation/${booking.booking_id}`)}
+                className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow`}
+              >
+                View Ticket
+              </div>
+             </div>
               <p className="text-xs text-gray-500 mt-1">
                 {booking.statusMessage}
               </p>

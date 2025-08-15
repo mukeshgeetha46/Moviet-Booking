@@ -10,13 +10,13 @@ export default function MainMovie(): React.ReactElement {
   const { user, logout } = useAuth();
   console.log('main movie user:', user);
   return (
-    <div>
-      <Navbar />
-      
+   <div>
+  <Navbar />
 
-      <div className="w-full mx-auto px-4 my-6">
-       <Outlet />
-      </div>
-    </div>
+  <div className="w-full mx-auto px-4 my-6 pt-16">
+    <Outlet />
+  </div>
+</div>
+
   );
 }
