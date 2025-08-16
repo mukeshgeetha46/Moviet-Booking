@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 interface ApiResponse<T> {
   code: number;
@@ -19,8 +20,7 @@ const AuthPage: React.FC = () => {
   const [Cpassword, setCpassword] = useState('');
 const { login,user } = useAuth();
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
+ const [isloading, setIsloading] = useState(false);
     useEffect(() => {
      if(user){
       navigate('/');
@@ -34,10 +34,18 @@ const { login,user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setIsSubmitting(true);
+  setIsloading(true);
   try {
-    const url = isLogin ? '/login/' : '/register/';
-    const response = await axiosInstance.post<ApiResponse<any>>(url, {fullname:name, email, passwordhash:password, confirm_password: Cpassword });
+     const url = isLogin 
+  ? `${process.env.REACT_APP_API_URL}/login/`
+  : `${process.env.REACT_APP_API_URL}/register/`;
+
+const response = await axios.post<ApiResponse<any>>(url, {
+  fullname: name,
+  email,
+  passwordhash: password,
+  confirm_password: Cpassword
+});
     if(response.data.data.token && response.data.data.user){
 login(response.data.data.token, response.data.data.user);
  navigate('/')
@@ -57,6 +65,7 @@ login(response.data.data.token, response.data.data.user);
      toast.success(isLogin ?'Logged in successfully' : 'Registered successfully');
   
   } catch (error: any) {
+    console.log(error)
    if (
   error.response?.data?.error &&
   Array.isArray(error.response.data.error.passwordhash) &&
@@ -74,7 +83,7 @@ else if(error.response?.data?.error &&
 
 }
 finally{
-    setIsSubmitting(false)
+    setIsloading(false)
   }
 };
 
@@ -180,7 +189,8 @@ finally{
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                {isLogin ? 'Sign in' : 'Sign up'}
+                
+              {isloading ? 'Loading...' : isLogin ? 'Sign in' : 'Sign up'}
               </button>
             </div>
           </form>
