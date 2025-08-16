@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [movieId, setMovieId] = useState<number | null>(null);
-  const [movieDate, setMovieDate] = useState<Date | null>(null);
+  const [movieDate, setMovieDate] = useState<Date | null>(new Date());
 
   useEffect(() => {
     const storedToken = getToken();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Badge } from "antd";
-import { EnvironmentOutlined, StarFilled } from "@ant-design/icons";
+import { ArrowLeftOutlined, EnvironmentOutlined, StarFilled } from "@ant-design/icons";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
@@ -63,7 +63,7 @@ const { movieId, setMovieDate } = useAuth();
     for (let i = 0; i <= daysRemaining; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-
+     
       let label = "";
       if (i === 0) label = "Today";
       else if (i === 1) label = "Tomorrow";
@@ -121,9 +121,22 @@ const { movieId, setMovieDate } = useAuth();
   return (
     <div className="min-h-screen bg-white py-8 max-w-7xl mx-auto">
       <div className="container mx-auto px-4">
+        
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{movieName}</h1>
+           <div className="flex items-center gap-5">
+<div onClick={() => navigate(-1)}>
+    <ArrowLeftOutlined style={{ fontSize: 25 }} />
+  </div>
+
+       <div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{movieName}</h1>
           <p className="text-gray-600">Select your preferred cinema & showtime</p>
+       </div>
+           </div>
+          
+          
+
+          
         </div>
 
         <div className="mb-8">

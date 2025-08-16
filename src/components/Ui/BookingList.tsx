@@ -3,6 +3,7 @@ import BookingListLoginPrompt from "./BookingListLoginPrompt";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { CalendarOutlined, EnvironmentOutlined, FilePdfOutlined } from "@ant-design/icons";
 type BookingStatus = "REFUNDED" | "PAYMENT_PENDING" | "PAYMENT_FAILED";
 
 interface Booking {
@@ -21,6 +22,8 @@ interface Booking {
   statusMessage: string;
   movie_date: string;
   booked_seats: string;
+  price: string;
+  theater_name: string;
 }
 
 interface ApiResponse<T> {
@@ -113,52 +116,80 @@ export default function BookingList() {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-4 space-y-4">
-      {bookings.map((booking) => (
-        <div
-          key={booking.booking_id}
-          className="bg-white rounded-lg shadow p-4 border border-gray-200"
-        >
-          <p className="text-sm text-gray-500">
-            Ordered on: {formatDateTime(booking.created_at)}
-          </p>
-          <div className="flex gap-4 mt-2">
-            <img
-              src={booking.image_url}
-              alt={booking.title}
-              className="w-16 h-20 object-cover rounded"
-            />
-            <div className="flex-1">
-              <h2 className="font-semibold text-lg">{booking.title}</h2>
-              <p className="text-gray-500">{booking.languages}</p>
-              <p className="text-sm font-medium">
-                {formatDate(booking.movie_date)} | {booking.show_time}
-              </p>
-              <p className="text-sm text-gray-600">{booking.address}</p>
-              <p className="text-sm text-gray-600">{`${booking.ticket_count} tickets`}</p>
-              <p className="text-sm font-medium">{`Seats :${booking.booked_seats}`}</p>
+     <>
+<div className="w-full mx-auto p-1 md:p-4 lg:p-4 xl:p-4 mt-5 ">
+<div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+  {bookings.map((booking) => (
+      
+<div
+      key={booking.booking_id}
+      className="w-full  mx-auto bg-white shadow-md rounded-2xl border overflow-hidden"
+    >
+      <div className="flex gap-4 p-4">
+        <img
+          src={booking.image_url}
+          alt="Movie Poster"
+          className="w-24 h-36 object-cover rounded-lg"
+        />
 
-       
-             <div className="flex items-center space-x-2 mt-2">
-               <div
-                className={`text-white text-xs px-2 py-1 mt-2 rounded w-fit bg-green-500`}
-              >
-                {booking.status}
-              </div>
-              <div
-              onClick={()=>navigate(`/movies/Booking/confirmation/${booking.booking_id}`)}
-                className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow`}
-              >
-                View Ticket
-              </div>
-             </div>
-              <p className="text-xs text-gray-500 mt-1">
-                {booking.statusMessage}
-              </p>
+        <div className="flex flex-col flex-1 justify-between">
+          <div>
+            <h2 className="text-lg font-bold">{booking.title}</h2>
+             <p className="text-sm text-gray-700 font-medium">
+          {booking.theater_name}
+        </p>
+            <p className="text-xs text-gray-500">{`Hindi · Malayalam · Tamil`}</p>
+
+            <div className="mt-2 flex items-center text-gray-600 text-sm gap-1">
+              <CalendarOutlined className="text-gray-500" />
+              <span>
+                {formatDate(booking.movie_date)} | {booking.show_time}
+              </span>
+            </div>
+
+            <div className="flex items-center text-gray-600 text-sm gap-1 mt-1">
+              <EnvironmentOutlined className="text-gray-500" />
+              <span>{booking.address}</span>
             </div>
           </div>
+
+          <div className="mt-3 space-y-1">
+            <p className="text-xs font-semibold text-gray-600">Seats:</p>
+            <div className="flex flex-wrap gap-1 mt-1">
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">
+                {Array.isArray(booking.booked_seats)
+                  ? booking.booked_seats.join(", ")
+                  : booking.booked_seats}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500">
+              <strong>Booked On:</strong> {formatDate(booking.movie_date)}
+            </p>
+            <p className="text-xs text-gray-500">
+              <strong>Total Amount:</strong> ₹{booking.price}
+            </p>
+          </div>
         </div>
-      ))}
+      </div>
+      <div className="flex justify-between items-center bg-gray-50 px-4 py-3 border-t">
+        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+          Booked
+        </span>
+        <button
+          onClick={() =>
+            navigate(`/movies/Booking/confirmation/${booking.booking_id}`)
+          }
+          className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow text-sm"
+        >
+          <FilePdfOutlined /> View Ticket
+        </button>
+      </div>
     </div>
+
+    
+  ))}
+    </div>
+</div>
+</>
   );
 }
