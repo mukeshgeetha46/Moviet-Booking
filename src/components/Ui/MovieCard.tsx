@@ -22,14 +22,12 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         setMovieId(movie.movie_id);
         navigate(`/movies/${movie.title}/${movie.movie_id}`);
       }
-const baseUrl = process.env.REACT_APP_API_URL?.replace(/\/api$/, "") || "";
-const imageUrl = `${baseUrl}/assets/movie/${movie.image_url}`;
 
   return (
     <div className="w-[200px] flex-shrink-0" onClick={handleMovieClick}>
       <div className="relative">
         <img
-          src={imageUrl}
+          src={movie.image_url}
           alt={movie.title}
           className="rounded-lg w-full"
         />
