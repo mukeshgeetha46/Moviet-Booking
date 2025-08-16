@@ -69,17 +69,19 @@ const MovieDetails = () => {
     fetchMoviesdetails();
   }, [params]);
 
+
   if (isLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (error) return <div className="min-h-screen flex items-center justify-center text-red-500">Error: {error}</div>;
   if (!movieDetails) return <div className="min-h-screen flex items-center justify-center">No movie data found</div>;
-
+ const baseUrl = process.env.REACT_APP_API_URL?.replace(/\/api$/, "") || "";
+  const imageUrl = `${baseUrl}/assets/movie/${movieDetails.image_url}`;
   return (
     <div className="min-h-screen bg-white text-white">
       <div className="relative">
         <div 
           className="absolute inset-0 bg-cover bg-right bg-no-repeat"
           style={{
-            backgroundImage: `url(${movieDetails.image_url})`,
+            backgroundImage: `url(${imageUrl})`,
             filter: 'brightness(0.5)'
           }}
         />
@@ -99,7 +101,7 @@ const MovieDetails = () => {
           <div className="flex-shrink-0">
             <div className="relative w-72 h-96 rounded-lg overflow-hidden shadow-2xl">
               <img 
-                src={movieDetails.image_url}
+                src={imageUrl}
                 alt={movieDetails.title}
                 className="w-full h-full object-cover"
               />
