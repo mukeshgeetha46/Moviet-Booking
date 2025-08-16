@@ -118,6 +118,7 @@ export default function BookingList() {
   return (
      <>
 <div className="w-full mx-auto p-1 md:p-4 lg:p-4 xl:p-4 mt-5 ">
+  <p className="text-[25px] leading-[35px] font-bold">Your Orders</p>
 <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
   {bookings.map((booking) => (
       
