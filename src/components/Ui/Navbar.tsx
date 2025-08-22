@@ -112,10 +112,18 @@ const handleOpenOrders = () => {
             <span className="text-gray-800 font-medium">Your Orders</span>
           </p>
           <p
+          onClick={()=>navigate('/profile')}
             className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
           >
             <UserOutlined className="text-lg text-red-500" />
             <span className="text-gray-800 font-medium">Profile</span>
+          </p>
+          <p
+          onClick={()=>navigate('/add/movie')}
+            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100"
+          >
+            <UserOutlined className="text-lg text-red-500" />
+            <span className="text-gray-800 font-medium">Add Movie</span>
           </p>
         </nav>
       </Drawer>

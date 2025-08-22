@@ -1,4 +1,6 @@
+import MovieForm from "../components/Admin/MovieAddForm";
 import AuthPage from "../components/Auth/Auth";
+import ProfilePage from "../components/Profile/Profile";
 import BookingConfirmation from "../components/Ui/BookingConfirmation";
 import BookingList from "../components/Ui/BookingList";
 import MainMovie from "../components/Ui/MainMovie";
@@ -20,6 +22,8 @@ const MainRoutes = {
     { path:'movies/buytickets', element: <TheaterSelection /> },
     { path:'movies/Booking/confirmation/:booking_id', element: <BookingConfirmation /> },
     { path:'movies/Booking/list', element: <BookingList /> },
+    { path:'profile', element: <ProfilePage /> },
+    { path:'add/movie', element: <MovieForm /> },
    
   ],
 };

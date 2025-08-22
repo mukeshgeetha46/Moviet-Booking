@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import HeroSlider from "./HeroSlider";
 import MovieCard from "./MovieCard";
+import Banner from "./Banner";
+import Events from "./Events";
+import Premior from "./Premior";
 
 interface Movie {
   title: string;
@@ -48,7 +51,7 @@ if (isLoading) {
     );
   }
   return (
-    <div>
+    <div className="w-full">
       <HeroSlider />
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Recommended Movies</h2>
@@ -61,6 +64,12 @@ if (isLoading) {
           <MovieCard key={i} movie={m} />
         ))}
       </div>
+       
+       <Banner />
+
+       <Events />
+
+       <Premior />
     </div>
   );
 }
