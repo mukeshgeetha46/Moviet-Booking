@@ -9,26 +9,43 @@ import event7 from '../../assets/Events/music-shows-collection-202211140440.avif
 import event8 from '../../assets/Events/theatre-shows-collection-202211140440.avif'
 import event9 from '../../assets/Events/upskill-collection-202211140440.avif'
 import event10 from '../../assets/Events/workshop-and-more-web-collection-202211140440.avif'
+
 const Events = () => {
+
+  const events = [
+    event1, event2, event3, event4, event5,
+    event6, event7, event8, event9, event10
+  ]
+
   return (
-    <div className='w-full flex justify-center items-center pt-10 pb-5'>
-<div className='w-[77%] overflow-x-auto flex flex-col justify-center'>
-       <p className='text-[24px] leading-[28px] font-bold'>The Best of Live Events</p>
-    <div className='flex items-center gap-4'>
-        <img src={event1} className='w-[220px]' alt="" />
-        <img src={event2} className='w-[220px]' alt="" />
-        <img src={event3} className='w-[220px]' alt="" />
-        <img src={event4} className='w-[220px]' alt="" />
-        <img src={event5} className='w-[220px]' alt="" />
-        <img src={event6} className='w-[220px]' alt="" />
-        <img src={event7} className='w-[220px]' alt="" />
-        <img src={event8} className='w-[220px]' alt="" />
-        <img src={event9} className='w-[220px]' alt="" />
-        <img src={event10} className='w-[220px]' alt="" />
+    <div className="w-full py-10 px-4">
+      <div className="max-w-7xl mx-auto">
+
+        {/* Title */}
+        <p className="text-2xl md:text-3xl font-bold mb-6">
+          The Best of Live Events
+        </p>
+
+        {/* Horizontal Scroll */}
+        <div className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide">
+
+          {events.map((item, index) => (
+            <div
+              key={index}
+              className="min-w-[160px] sm:min-w-[180px] md:min-w-[200px] lg:min-w-[220px] snap-start"
+            >
+              <img
+                src={item}
+                alt="event"
+                className="w-full rounded-lg hover:scale-105 transition duration-300 cursor-pointer"
+              />
+            </div>
+          ))}
+
+        </div>
+
+      </div>
     </div>
-    </div>
-    </div>
-    
   )
 }
 
